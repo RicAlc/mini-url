@@ -4,7 +4,7 @@ const { showSignIn } = defineProps(["showSignIn"]);
 </script>
 
 <template>
-  <header class="p-6">
+  <header class="p-4">
     <nav class="flex justify-between items-center max-w-6xl mx-auto">
       <RouterLink to="/">
         <img

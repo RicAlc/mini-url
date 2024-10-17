@@ -1,0 +1,123 @@
+<script setup>
+import { ref, inject } from "vue";
+import { useToast } from "vue-toastification";
+import { RouterLink, useRouter } from "vue-router";
+import { UserIcon, MailIcon, LockIcon } from "lucide-vue-next";
+
+const toast = useToast();
+const router = useRouter();
+const http = inject("http");
+
+const name = ref("");
+const email = ref("");
+const password = ref("");
+const password_confirmation = ref("");
+
+const handleSubmit = () => {
+  if (password.value !== password_confirmation.value) {
+    toast.error("The passwords don't match");
+    return;
+  }
+  http
+    .post("/register", {
+      name: name.value,
+      email: email.value,
+      password_confirmation: password_confirmation.value,
+      password: password.value,
+    })
+    .then((res) => {
+      toast.success("Signed up successfully");
+      router.push("/signin");
+    })
+    .catch((err) => toast.error(err.response.data));
+};
+</script>
+
+<template>
+  <div
+    class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 dark:bg-[#11162220] dark:backdrop-blur-sm dark:border-2 dark:[&>form>div>label]:text-white">
+    <form class="space-y-6" @submit.prevent="handleSubmit">
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">
+          Name
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <UserIcon class="h-5 w-5 text-gray-500" />
+          </div>
+          <input id="name" v-model="name" type="text" required
+            class="pl-10 block w-full rounded-md dark:bg-[#11162220] dark:border-2 dark:border-blue-200 dark:text-white"
+            placeholder="John Doe" />
+        </div>
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">
+          Email address
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <MailIcon class="h-5 w-5 text-gray-400" />
+          </div>
+          <input id="email" v-model="email" type="email" required
+            class="pl-10 block w-full rounded-md dark:bg-[#11162220] dark:border-2 dark:border-blue-200 dark:text-white"
+            placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <LockIcon class="h-5 w-5 text-gray-400" />
+          </div>
+          <input id="password" v-model="password" type="password" required
+            class="pl-10 block w-full rounded-md dark:bg-[#11162220] dark:border-2 dark:border-blue-200 dark:text-white"
+            placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">
+          Password confirmation
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <LockIcon class="h-5 w-5 text-gray-400" />
+          </div>
+          <input id="password_confirmation" v-model="password_confirmation" type="password" required
+            class="pl-10 block w-full rounded-md dark:bg-[#11162220] dark:border-2 dark:border-blue-200 dark:text-white"
+            placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div>
+        <button type="submit"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-fuchsia-600 hover:bg-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-500">
+          Sign up
+        </button>
+      </div>
+    </form>
+
+    <div class="mt-6">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white text-gray-500 dark:bg-[#111622] dark:text-gray-200">
+            Already have an account?
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <RouterLink to="/signin" class="font-medium text-blue-600 hover:text-blue-500">
+          Sign in here
+        </RouterLink>
+      </div>
+    </div>
+  </div>
+</template>
