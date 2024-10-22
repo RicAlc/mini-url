@@ -3,6 +3,7 @@ import Hero from "../views/Hero.vue";
 import SignIn from "../views/SignIn.vue";
 import SignUp from "../views/SignUp.vue";
 import PasswordReset from "../views/PasswordReset.vue";
+import Dashboard from "../views/Dashboard.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,23 @@ const router = createRouter({
       path: "/password-reset",
       name: "passwordReset",
       component: PasswordReset,
+    },
+    {
+      path: "/app",
+      name: "dashboard",
+      component: Dashboard,
+      children: [
+        {
+          path: "my-links",
+          name: "mylinks",
+          component: {},
+        },
+        {
+          path: "qr-generator",
+          name: "qrgenerator",
+          component: {},
+        },
+      ],
     },
   ],
 });
