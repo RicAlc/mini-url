@@ -1,34 +1,40 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import http from "../plugins/axios";
 import { useToast } from "vue-toastification";
 
+const emit = defineEmits('updateList');
 const toast = useToast();
 const original_url = ref("");
 const shortenedUrl = ref("");
+const name = ref("");
 
 const shortenUrl = () => {
-  if (original_url.value.trim() === "") {
-    toast.warning("Please enter a valid URL");
+  if (name.value.trim() === "") {
+    toast.warning("Please enter a valid name");
     return;
-  }
-  http
-    .post(
-      "/api/shorten",
-      JSON.stringify({ original_url: original_url.value }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-    .then((res) => {
-      toast.success("Url shortened successfully")
-      shortenedUrl.value = res.data.url;
-    }).catch(err => {
-      toast.error("Something went wrong");
-      console.error(err);
-    });
+  } else
+    if (original_url.value.trim() === "") {
+      toast.warning("Please enter a valid URL");
+      return;
+    }
+
+  http.post(
+    "/api/shorten",
+    JSON.stringify({ original_url: original_url.value, name: name.value }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((res) => {
+    toast.success("Url shortened successfully")
+    shortenedUrl.value = res.data.url;
+    emit('updateList');
+  }).catch(err => {
+    toast.error("Something went wrong");
+    console.error(err);
+  });
 };
 const copyUrl = () => {
   if (shortenedUrl.value.trim() === "") return;
@@ -38,7 +44,15 @@ const copyUrl = () => {
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-2xl p-8 w-full max-w-2xl">
+  <div class="bg-white rounded-lg shadow-2xl p-5 w-full max-w-2xl">
+    <div class="mb-4">
+      <label for="urlName" class="block text-sm font-medium text-gray-700 mb-2">Name:</label>
+      <div class="relative">
+        <input v-model="name" type="text" id="urlName" name="urlName" placeholder="My socials"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+    </div>
+
     <div class="mb-4">
       <label for="longUrl" class="block text-sm font-medium text-gray-700 mb-2">Enter your URL</label>
       <div class="relative">

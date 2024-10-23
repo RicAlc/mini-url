@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('shortened_urls', function (Blueprint $table) {
             $table->id();
+            $table->string('name', length: 100);
             $table->text('original_url');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('shortened_url', length: 255);

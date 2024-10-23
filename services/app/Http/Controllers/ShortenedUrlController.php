@@ -11,12 +11,55 @@ class ShortenedUrlController extends Controller {
     private $location = "ShortenedUrlController.php";
     private $baseUrl = "http://localhost:8000/";
 
+    public function getAllByUser(Request $req) {
+        try {
+            // $userId = session('user_id');
+            $myUrls = ShortenedUrl::where('user_id', 1)->orderBy('created_at', 'desc')->get();
+            return response([
+                "status"    => true,
+                "data"      => $myUrls,
+                "userId" => session('user_id'),
+            ],);
+        } catch (Exception $exception) {
+            return ResponseManager::setErrorServerResponse($exception, $this->location, 'getAllByUser', true);
+        }
+    }
+
+    public function getOne(Request $req) {
+        try {
+            $shortenedUrl = ShortenedUrl::where('id', $req->id)->first();
+            if ($shortenedUrl) {
+                return response([
+                    "status"    => true,
+                    "data"      => $shortenedUrl,
+                ], 200);
+            } else {
+                return response([
+                    "status"    => false,
+                    "message"   => 'Error getting Url',
+                ], 500);
+            }
+        } catch (Exception $exception) {
+            return ResponseManager::setErrorServerResponse($exception, $this->location, 'getOne', true);
+        }
+    }
+
     public function addOne(Request $req) {
         try {
+            //  Validación de parámetros
+            $validation = $this->validateParams($req->only(
+                'name',
+                'original_url'
+            ));
+            if ($validation->fails()) return response([
+                "message"   => "Parameter validation failed.",
+                "errors"    => $validation->errors()
+            ], 400);
 
             $shortenedUrl = new ShortenedUrl();
             $shortenedUrl->original_url = $req->original_url;
             $shortenedUrl->shortened_url = "Temporary";
+            $shortenedUrl->name = $req->name;
             $shortenedUrl->user_id = 1;
 
             if ($shortenedUrl->save()) {
@@ -35,6 +78,49 @@ class ShortenedUrlController extends Controller {
             }
         } catch (Exception $exception) {
             return ResponseManager::setErrorServerResponse($exception, $this->location, 'addOne', true);
+        }
+    }
+
+    public function update(Request $req) {
+        try {
+            $shortenedUrl = ShortenedUrl::where('id', $req->id)->first();
+            if ($shortenedUrl) {
+                $shortenedUrl->name = $req->name;
+                $shortenedUrl->original_url = $req->original_url;
+                $shortenedUrl->save();
+                return response([
+                    "status"    => true,
+                    "message"   => 'Url updated successfully',
+                ], 200);
+            } else {
+                return response([
+                    "status"    => false,
+                    "message"   => 'Error updating Url',
+                ], 500);
+            }
+        } catch (Exception $exception) {
+            return ResponseManager::setErrorServerResponse($exception, $this->location, 'update', true);
+        }
+    }
+
+    public function delete(Request $req) {
+        try {
+            $shortenedUrl = ShortenedUrl::where('id', $req->id)->first();
+            if ($shortenedUrl) {
+                $shortenedUrl->delete();
+                return response([
+                    "status"    => true,
+                    "message"   => 'Url deleted successfully',
+                ], 200);
+            } else {
+                return response([
+                    "params" => $req->all(),
+                    "status"    => false,
+                    "message"   => 'Error deleting Url',
+                ], 500);
+            }
+        } catch (Exception $exception) {
+            return ResponseManager::setErrorServerResponse($exception, $this->location, 'delete', true);
         }
     }
 
@@ -73,6 +159,17 @@ class ShortenedUrlController extends Controller {
         return base64_encode($result);
     }
 
-    private function validateUrl($url) {
+    private function validateParams($params) {
+        $required = [
+            'name'    => "required|string",
+            'original_url'    => "required|string",
+        ];
+
+        return validator($params, $required, [
+            'required'            => 'Field is required.',
+            'min'                 => 'Field is required.',
+            'numeric'             => 'Field must be numeric.',
+            'string'              => 'Field must be string.',
+        ]);
     }
 }

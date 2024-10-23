@@ -4,6 +4,7 @@ import SignIn from "../views/SignIn.vue";
 import SignUp from "../views/SignUp.vue";
 import PasswordReset from "../views/PasswordReset.vue";
 import Dashboard from "../views/Dashboard.vue";
+import EditUrl from "../views/EditUrl.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,18 +31,18 @@ const router = createRouter({
     },
     {
       path: "/app",
-      name: "dashboard",
-      component: Dashboard,
+      name: "app",
       children: [
         {
-          path: "my-links",
-          name: "mylinks",
-          component: {},
+          path: "",
+          name: "dashboard",
+          component: Dashboard,
         },
         {
-          path: "qr-generator",
-          name: "qrgenerator",
-          component: {},
+          path: "edit/:id",
+          name: "editurl",
+          component: EditUrl,
+          props: true,
         },
       ],
     },
