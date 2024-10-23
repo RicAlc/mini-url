@@ -41,7 +41,6 @@ const udpateUrl = () => {
     });
 };
 onMounted(() => {
-    console.log(props.id);
     http.get(`api/geturl/${props.id}`).then((res) => {
         id.value = res.data.data.id;
         name.value = res.data.data.name;

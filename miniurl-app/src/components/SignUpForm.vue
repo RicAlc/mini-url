@@ -19,7 +19,7 @@ const handleSubmit = () => {
     return;
   }
   http
-    .post("/register", {
+    .post("/signup", {
       name: name.value,
       email: email.value,
       password_confirmation: password_confirmation.value,

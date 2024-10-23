@@ -19,15 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
-
-        //
     })->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
             '/register',
             '/signin',
-            '/signout',
         ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions) {
+    })->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi();
+    })->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

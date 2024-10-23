@@ -11,14 +11,14 @@ class ShortenedUrlController extends Controller {
     private $location = "ShortenedUrlController.php";
     private $baseUrl = "http://localhost:8000/";
 
+
     public function getAllByUser(Request $req) {
         try {
-            // $userId = session('user_id');
-            $myUrls = ShortenedUrl::where('user_id', 1)->orderBy('created_at', 'desc')->get();
+            $user = $req->user();
+            $myUrls = ShortenedUrl::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
             return response([
                 "status"    => true,
                 "data"      => $myUrls,
-                "userId" => session('user_id'),
             ],);
         } catch (Exception $exception) {
             return ResponseManager::setErrorServerResponse($exception, $this->location, 'getAllByUser', true);
@@ -46,6 +46,7 @@ class ShortenedUrlController extends Controller {
 
     public function addOne(Request $req) {
         try {
+            $user = $req->user();
             //  Validación de parámetros
             $validation = $this->validateParams($req->only(
                 'name',
@@ -60,7 +61,7 @@ class ShortenedUrlController extends Controller {
             $shortenedUrl->original_url = $req->original_url;
             $shortenedUrl->shortened_url = "Temporary";
             $shortenedUrl->name = $req->name;
-            $shortenedUrl->user_id = 1;
+            $shortenedUrl->user_id = $user->id;
 
             if ($shortenedUrl->save()) {
                 $shortenedUrl->shortened_url = $this->pathGenerator($shortenedUrl->id);

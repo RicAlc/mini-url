@@ -12,12 +12,16 @@ class AuthenticatedSessionController extends Controller {
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): Response {
+    public function store(LoginRequest $request) {
         $request->authenticate();
 
         $request->session()->regenerate();
-
-        return response()->noContent();
+        $token = $request->user()->createToken('miniurl')->plainTextToken;
+        $userName = $request->user()->name;
+        return response([
+            'message' => 'Login successful',
+            'name' => $userName
+        ])->cookie('session_token', $token, 60, '/', null, false, false, false);
     }
 
     /**

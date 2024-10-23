@@ -1,6 +1,15 @@
 <script setup>
+import { onBeforeMount, ref } from "vue";
 import SignUpForm from "../components/SignUpForm.vue";
 import { RouterLink } from "vue-router";
+
+const isLoggedIn = ref(false);
+onBeforeMount(() => {
+  isLoggedIn.value = sessionStorage.getItem('session') == 'true';
+  if (isLoggedIn.value) {
+    window.location.href = '/app';
+  }
+});
 </script>
 
 <template>

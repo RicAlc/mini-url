@@ -1,5 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const animationStep = ref(0);
 
 const animate = () => {
@@ -8,6 +11,10 @@ const animate = () => {
 };
 
 onMounted(() => {
+  if (sessionStorage.getItem("session_token")) {
+    window.location.href = "/app";
+    return;
+  }
   animate();
 });
 </script>
@@ -23,9 +30,7 @@ onMounted(() => {
         marketing campaigns, and more!
       </p>
 
-      <div
-        class="bg-white rounded-lg shadow-2xl p-8 mb-12 w-full max-w-2xl mx-auto relative overflow-hidden"
-      >
+      <div class="bg-white rounded-lg shadow-2xl p-8 mb-12 w-full max-w-2xl mx-auto relative overflow-hidden">
         <div class="flex items-center mb-4">
           <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
           <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
@@ -33,34 +38,18 @@ onMounted(() => {
         </div>
         <div class="relative h-16">
           <transition-group name="fade" mode="out-in">
-            <div
-              v-if="animationStep === 0"
-              key="long-url"
-              class="absolute inset-0 flex items-center"
-            >
-              <div
-                class="w-full h-10 bg-gray-100 rounded-full flex items-center px-4 text-gray-600"
-              >
+            <div v-if="animationStep === 0" key="long-url" class="absolute inset-0 flex items-center">
+              <div class="w-full h-10 bg-gray-100 rounded-full flex items-center px-4 text-gray-600">
                 https://www.example.com/very-long-url-that-needs-shortening
               </div>
             </div>
-            <div
-              v-else-if="animationStep === 1"
-              key="processing"
-              class="absolute inset-0 flex items-center justify-center"
-            >
-              <div
-                class="w-10 h-10 border-4 border-fuchsia-500 border-t-transparent rounded-full animate-spin"
-              ></div>
+            <div v-else-if="animationStep === 1" key="processing"
+              class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 border-4 border-fuchsia-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-            <div
-              v-else
-              key="short-url"
-              class="absolute inset-0 flex items-center"
-            >
+            <div v-else key="short-url" class="absolute inset-0 flex items-center">
               <div
-                class="w-full h-10 bg-fuchsia-100 rounded-full flex items-center px-4 text-fuchsia-600 font-semibold"
-              >
+                class="w-full h-10 bg-fuchsia-100 rounded-full flex items-center px-4 text-fuchsia-600 font-semibold">
                 mini.url/shorturl
               </div>
             </div>
@@ -84,9 +73,7 @@ onMounted(() => {
       </div>
     </main>
 
-    <footer
-      class="absolute bottom-0 left-0 right-0 p-6 text-center text-fuchsia-200"
-    >
+    <footer class="absolute bottom-0 left-0 right-0 p-6 text-center text-fuchsia-200">
       © 2024 miniURL. All rights reserved.
     </footer>
   </div>
